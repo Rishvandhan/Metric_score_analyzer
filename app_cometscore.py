@@ -54,7 +54,7 @@ if uploaded_file is not None:
         st.subheader("Reference")
         st.success(sample["reference"])
 
-        st.subheader("Hypotheses")
+        # st.subheader("Hypotheses")
 
         rows = []
 
