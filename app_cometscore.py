@@ -4,14 +4,14 @@ import streamlit as st
 import plotly.express as px
 
 st.set_page_config(
-    page_title="COMET Score Explorer",
+    page_title="Neural Metrics Score Explorer",
     layout="wide"
 )
 
-st.title("COMET Score Explorer")
+st.title("Neural Metrics Score Explorer")
 st.write(
     "Upload a JSON file containing source sentences, reference translations, "
-    "hypotheses, and COMET scores."
+    "hypotheses, and scores."
 )
 
 uploaded_file = st.file_uploader(
@@ -62,7 +62,7 @@ if uploaded_file is not None:
             rows.append({
                 "Hypothesis Type": hyp_type,
                 "Translation": hyp_data["text"],
-                "COMET Score": hyp_data["score"]
+                "Score": hyp_data["score"]
             })
 
         df = pd.DataFrame(rows)
@@ -96,14 +96,14 @@ if uploaded_file is not None:
             ]
         })
 
-        st.subheader("Average COMET Score Across Dataset")
+        st.subheader("Average Score Across Dataset")
 
         fig_avg = px.bar(
             avg_df,
             x="Hypothesis Type",
             y="Average Score",
             text="Average Score",
-            title="Average COMET Score by Hypothesis Category"
+            title="Average Score by Hypothesis Category"
         )
 
         fig_avg.update_traces(
@@ -114,7 +114,7 @@ if uploaded_file is not None:
         fig_avg.update_layout(
             yaxis_range=[0, 1],
             xaxis_title="Hypothesis Type",
-            yaxis_title="Average COMET Score",
+            yaxis_title="Average Score",
             height=450
         )
 
