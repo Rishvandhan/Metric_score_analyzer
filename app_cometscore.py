@@ -67,6 +67,9 @@ if uploaded_files:
             for hyp, scores in hyp_scores.items()
         }
 
+    # Custom ordering: good → bad → very bad → worst
+    desired_order = ["good", "bad", "very bad", "worst"]
+
     # ==========================================================
     # Comparison: Grouped Bar Chart
     # ==========================================================
@@ -125,8 +128,6 @@ if uploaded_files:
     # Build a pivot table: rows=hyp_type, columns=filename
     comparison_data = {}
 
-    # Custom ordering: good → bad → very bad → worst
-    desired_order = ["good", "bad", "very bad", "worst"]
     all_hyp_types = sorted(
         {hyp for hyp_dict in file_avg_scores.values() for hyp in hyp_dict},
         key=lambda x: desired_order.index(x) if x in desired_order else len(desired_order)
