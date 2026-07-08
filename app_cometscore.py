@@ -87,12 +87,11 @@ if uploaded_files:
 
     chart_df = pd.DataFrame(chart_rows)
 
-    # Apply custom category ordering to the x-axis
-    chart_df["Hypothesis Type"] = pd.Categorical(
-        chart_df["Hypothesis Type"],
-        categories=desired_order,
-        ordered=True
-    )
+    # Sort rows by custom order so known types come first, then alphabetically
+    def sort_key(hyp):
+        return desired_order.index(hyp) if hyp in desired_order else len(desired_order)
+    chart_df["_sort"] = chart_df["Hypothesis Type"].apply(sort_key)
+    chart_df = chart_df.sort_values("_sort").drop(columns="_sort")
 
     fig_comp = px.bar(
         chart_df,
@@ -102,7 +101,8 @@ if uploaded_files:
         barmode="group",
         text="Average Score",
         title="Average Score by Hypothesis Type — Grouped by File",
-        color_discrete_sequence=px.colors.qualitative.Plotly
+        color_discrete_sequence=px.colors.qualitative.Plotly,
+        category_orders={"Hypothesis Type": desired_order}
     )
 
     fig_comp.update_traces(
@@ -223,12 +223,9 @@ if uploaded_files:
                 })
             file_avg_df = pd.DataFrame(file_avg_rows)
 
-            # Apply same custom ordering
-            file_avg_df["Hypothesis Type"] = pd.Categorical(
-                file_avg_df["Hypothesis Type"],
-                categories=desired_order,
-                ordered=True
-            )
+            # Sort rows by custom order
+            file_avg_df["_sort"] = file_avg_df["Hypothesis Type"].apply(sort_key)
+            file_avg_df = file_avg_df.sort_values("_sort").drop(columns="_sort")
 
             fig_file = px.bar(
                 file_avg_df,
@@ -236,7 +233,8 @@ if uploaded_files:
                 y="Average Score",
                 text="Average Score",
                 title=f"Average Score — {fname}",
-                color_discrete_sequence=["#636EFA"]
+                color_discrete_sequence=["#636EFA"],
+                category_orders={"Hypothesis Type": desired_order}
             )
             fig_file.update_traces(
                 texttemplate="%{text:.4f}",
