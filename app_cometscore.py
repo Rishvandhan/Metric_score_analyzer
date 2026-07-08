@@ -84,6 +84,13 @@ if uploaded_files:
 
     chart_df = pd.DataFrame(chart_rows)
 
+    # Apply custom category ordering to the x-axis
+    chart_df["Hypothesis Type"] = pd.Categorical(
+        chart_df["Hypothesis Type"],
+        categories=desired_order,
+        ordered=True
+    )
+
     fig_comp = px.bar(
         chart_df,
         x="Hypothesis Type",
@@ -117,11 +124,13 @@ if uploaded_files:
 
     # Build a pivot table: rows=hyp_type, columns=filename
     comparison_data = {}
-    all_hyp_types = sorted({
-        hyp
-        for hyp_dict in file_avg_scores.values()
-        for hyp in hyp_dict
-    })
+
+    # Custom ordering: good → bad → very bad → worst
+    desired_order = ["good", "bad", "very bad", "worst"]
+    all_hyp_types = sorted(
+        {hyp for hyp_dict in file_avg_scores.values() for hyp in hyp_dict},
+        key=lambda x: desired_order.index(x) if x in desired_order else len(desired_order)
+    )
 
     for hyp in all_hyp_types:
         row = {"Hypothesis Type": hyp}
@@ -212,6 +221,13 @@ if uploaded_files:
                     "Average Score": avg_score
                 })
             file_avg_df = pd.DataFrame(file_avg_rows)
+
+            # Apply same custom ordering
+            file_avg_df["Hypothesis Type"] = pd.Categorical(
+                file_avg_df["Hypothesis Type"],
+                categories=desired_order,
+                ordered=True
+            )
 
             fig_file = px.bar(
                 file_avg_df,
